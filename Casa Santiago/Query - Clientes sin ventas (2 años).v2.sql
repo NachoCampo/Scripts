@@ -16,7 +16,8 @@ WHERE
 		AND COD_CLIENTE IS NOT NULL
 		AND T_COMP = 'FAC'
     ) --Busco clientes que no hayan comprado en los últimos 2 años.
-    AND CTA_CLIENTE.COD_CLIENTE IN (
+AND 
+	CTA_CLIENTE.COD_CLIENTE IN (
         SELECT DISTINCT COD_CLIENT
         FROM CTA02
         WHERE FECHA_EMIS < DATEADD(DAY, -730, GETDATE())
