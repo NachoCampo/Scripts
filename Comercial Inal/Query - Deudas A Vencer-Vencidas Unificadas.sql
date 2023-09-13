@@ -110,56 +110,84 @@ GROUP BY
 
 SELECT 
     [CLIENTE], 
-    [CÓD. CLIENTE], 
+	CASE 
+        WHEN ISNUMERIC([CÓD. CLIENTE]) = 1 THEN CAST([CÓD. CLIENTE] AS INT)
+        ELSE NULL  -- O cualquier otro valor predeterminado que desees para no numéricos
+    END AS [CÓD. CLIENTE], 
     [TIPO COMPROBANTE], 
     [NRO. COMPROBANTE], 
     [FECHA DE VENCIMIENTO], 
-    [CÓD. PROVINCIA], 
+    CASE 
+        WHEN ISNUMERIC([CÓD. PROVINCIA]) = 1 THEN CAST([CÓD. PROVINCIA] AS INT)
+        ELSE NULL  -- O cualquier otro valor predeterminado que desees para no numéricos
+    END AS [CÓD. PROVINCIA], 
     [NOMBRE PROVINCIA], 
     [IMPORTE AL VENCIMIENTO (CTE)], 
     [IMPORTE AL VENCIMIENTO (EXT)], 
     [IMPORTE PENDIENTE (CTE)], 
     [IMPORTE PENDIENTE (EXT)], 
-    [CÓD. VENDEDOR], 
-    [NOMBRE VENDEDOR], 
-    [DIAS DE ATRASO],
     CASE 
-        WHEN [DIAS DE ATRASO] < 0 THEN 'A vencer'
+        WHEN ISNUMERIC([CÓD. VENDEDOR]) = 1 THEN CAST([CÓD. VENDEDOR] AS INT)
+        ELSE NULL  -- O cualquier otro valor predeterminado que desees para no numéricos
+    END AS [CÓD. VENDEDOR], 
+    [NOMBRE VENDEDOR], 
+    CAST([DÍAS DE ATRASO] AS INT) AS [DÍAS DE ATRASO],
+    CASE 
+        WHEN CAST([DÍAS DE ATRASO] AS INT) < 0 THEN 'A vencer'
         ELSE 'Vencida'
-    END AS [A VENCER O VENCIDA]
+    END AS [Estado]
 FROM 
     (SELECT 
         [CLIENTE], 
-        [CÓD. CLIENTE], 
+        	CASE 
+        WHEN ISNUMERIC([CÓD. CLIENTE]) = 1 THEN CAST([CÓD. CLIENTE] AS INT)
+        ELSE NULL  -- O cualquier otro valor predeterminado que desees para no numéricos
+    END AS [CÓD. CLIENTE],
         [TIPO COMPROBANTE], 
         [NRO. COMPROBANTE], 
         [FECHA DE VENCIMIENTO], 
-        [CÓD. PROVINCIA], 
+        CASE 
+            WHEN ISNUMERIC([CÓD. PROVINCIA]) = 1 THEN CAST([CÓD. PROVINCIA] AS INT)
+            ELSE NULL  -- O cualquier otro valor predeterminado que desees para no numéricos
+        END AS [CÓD. PROVINCIA], 
         [NOMBRE PROVINCIA], 
         [IMPORTE AL VENCIMIENTO (CTE)], 
         [IMPORTE AL VENCIMIENTO (EXT)], 
         [IMPORTE PENDIENTE (CTE)], 
         [IMPORTE PENDIENTE (EXT)], 
-        [CÓD. VENDEDOR], 
+        CASE 
+            WHEN ISNUMERIC([CÓD. VENDEDOR]) = 1 THEN CAST([CÓD. VENDEDOR] AS INT)
+            ELSE NULL  -- O cualquier otro valor predeterminado que desees para no numéricos
+        END AS [CÓD. VENDEDOR], 
         [NOMBRE VENDEDOR], 
-        [DIAS DE ATRASO]
+        CAST([DÍAS DE ATRASO] AS INT) AS [DÍAS DE ATRASO]
     FROM DEUDASVENCIDAS
     
     UNION ALL
     
     SELECT 
         [CLIENTE], 
-        [CÓD. CLIENTE], 
+        	CASE 
+        WHEN ISNUMERIC([CÓD. CLIENTE]) = 1 THEN CAST([CÓD. CLIENTE] AS INT)
+        ELSE NULL  -- O cualquier otro valor predeterminado que desees para no numéricos
+    END AS [CÓD. CLIENTE],
         [TIPO COMPROBANTE], 
         [NRO. COMPROBANTE], 
         [FECHA DE VENCIMIENTO], 
-        [CÓD. PROVINCIA], 
+        CASE 
+            WHEN ISNUMERIC([CÓD. PROVINCIA]) = 1 THEN CAST([CÓD. PROVINCIA] AS INT)
+            ELSE NULL  -- O cualquier otro valor predeterminado que desees para no numéricos
+        END AS [CÓD. PROVINCIA], 
         [NOMBRE PROVINCIA], 
         [IMPORTE AL VENCIMIENTO (CTE)], 
         [IMPORTE AL VENCIMIENTO (EXT)], 
         [IMPORTE PENDIENTE (CTE)], 
         [IMPORTE PENDIENTE (EXT)], 
-        [CÓD. VENDEDOR], 
+        CASE 
+            WHEN ISNUMERIC([CÓD. VENDEDOR]) = 1 THEN CAST([CÓD. VENDEDOR] AS INT)
+            ELSE NULL  -- O cualquier otro valor predeterminado que desees para no numéricos
+        END AS [CÓD. VENDEDOR], 
         [NOMBRE VENDEDOR], 
-        [DIAS DE ATRASO]
-    FROM DEUDASAVENCER) AS TablaCombinada;
+        CAST([DÍAS DE ATRASO] AS INT) AS [DÍAS DE ATRASO]
+    FROM DEUDASAVENCER) AS CombinedTable;
+
