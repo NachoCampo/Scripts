@@ -6,6 +6,7 @@ SELECT
             END) AS [Comprobante],
     --GVA12.COD_CLIENT AS [Codigo de Cliente],
     --GVA14.RAZON_SOCI AS [Razon Social],
+	--[GVA53].[PREC_ULC_L]  --Costo Total
     GVA12.COD_VENDED AS [Codigo de Vendedor],
     GVA23.NOMBRE_VEN AS [Nombre Vendedor],
     GVA12.COND_VTA AS [Condición de Venta],
