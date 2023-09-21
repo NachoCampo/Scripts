@@ -1,15 +1,15 @@
 /*Se crea la vista partiendo desde Compras e Importaciones | Consultas | Contabilidad | Detalle por subauxiliar, agregando: "CPA47.COD_CONCEP", "CPA45.DESC_CONCE".
 Luego se agrega en una vista y se filtra por fecha para que puedan ver aquellos comprobantes de Compras.
 */
-
 CREATE VIEW SubaxiliarNCM AS (  
     SELECT   
-        CPA04.FECHA_CONT, -- Agrega esta columna a la vista  
+        CPA04.FECHA_CONT AS [Fecha Contable], -- Agrega esta columna a la vista  
         dbo.TLMostrarCodigoDescripcion(SUBAUXILIAR.COD_SUBAUXILIAR, SUBAUXILIAR.DESC_SUBAUXILIAR) AS [Subauxiliar],  
         TIPO_AUXILIAR.COD_TIPO_AUXILIAR AS [Tipo de auxiliar],  
         TIPO_AUXILIAR.DESC_TIPO_AUXILIAR AS [Desc. tipo de auxiliar],  
-        CPA47.COD_CONCEP AS [Cod. Concepto de Compra],  
-        CPA45.DESC_CONCE AS [Desc. Concepto de Compra],  
+        CPA47.COD_CONCEP AS [Cod. Concepto de Compra],  --Codigo del Concepto de Compra.
+        CPA45.DESC_CONCE AS [Desc. Concepto de Compra], --Desc. del Concepto de Compra.
+		CPA04.LEYENDA AS [Observaciones], --Muestra las observaciones del comprobante de compra.
         SUM(CASE WHEN ASIENTO_CP.D_H = 'D' THEN SUBAUXILIAR_ASIENTO_CP.IMPORTE_RENGLON_BASE_CP ELSE 0.0 END) AS [Debe (CTE)],  
         SUM(CASE WHEN ASIENTO_CP.D_H = 'H' THEN SUBAUXILIAR_ASIENTO_CP.IMPORTE_RENGLON_BASE_CP ELSE 0.0 END) AS [Haber (CTE)],  
         SUM(CASE WHEN ASIENTO_CP.D_H = 'D' THEN SUBAUXILIAR_ASIENTO_CP.IMPORTE_RENGLON_BASE_CP ELSE 0.0 END - CASE WHEN ASIENTO_CP.D_H = 'H' THEN SUBAUXILIAR_ASIENTO_CP.IMPORTE_RENGLON_BASE_CP ELSE 0.0 END) AS [Saldo (CTE)],  
@@ -36,16 +36,17 @@ CREATE VIEW SubaxiliarNCM AS (
         TIPO_AUXILIAR.DESC_TIPO_AUXILIAR,  
         CPA47.COD_CONCEP,  
         CPA45.DESC_CONCE,  
-        SUBAUXILIAR.COD_SUBAUXILIAR  
+        SUBAUXILIAR.COD_SUBAUXILIAR,
+		CPA04.LEYENDA
 )  
 
 
 /*En base a esto es la consulta externa con las fechas incluidas*/
 SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
-SET DATEFORMAT DMY 
+SET DATEFORMAT YMD 
 SET DATEFIRST 7 
 SET DEADLOCK_PRIORITY -8;
 -- Define tus fechas acá
-DECLARE @FechaInicio datetime = '2023-09-01T00:00:00.000';
-DECLARE @FechaFin datetime = '2023-09-30T23:59:59.999';
+DECLARE @FechaInicio datetime = '2023-09-01';
+DECLARE @FechaFin datetime = '2023-09-30';
 SELECT * FROM SubaxiliarNCM WHERE FECHA_CONT BETWEEN @FechaInicio AND @FechaFin
