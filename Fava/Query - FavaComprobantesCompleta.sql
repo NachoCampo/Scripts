@@ -20,12 +20,23 @@ SELECT DISTINCT
     GVA01.DESC_COND AS [Descripción de Cond. Venta],
 	AC.COD_STA11 AS [Artículo], --Artículo que interviene en la factura.
     (SELECT TOP 1 CUENTA.DESC_CUENTA
-     FROM ARTICULO_CUENTA AC1
-     JOIN CUENTA ON AC1.ID_CUENTA_VENTAS = CUENTA.ID_CUENTA
-     WHERE AC1.COD_STA11 = AC.COD_STA11) AS [Seccion],
+		FROM ARTICULO_CUENTA AC1
+		JOIN CUENTA ON AC1.ID_CUENTA_VENTAS = CUENTA.ID_CUENTA
+		 WHERE AC1.COD_STA11 = AC.COD_STA11) AS [Seccion],
     CAST(GVA53.PREC_ULC_L AS decimal (13,2)) AS [Costo Total],  --Costo Total (Precio Standard que se graba todas las noches). Se va a buscar a la factura.
-    CAST(SBA05.COD_CTA AS INT) AS [Cuenta Fondos], -- Ajustado a INT (Entero) // La que cancela la factura de Ventas
-    SBA01.DESCRIPCIO AS [Nombre de Cuenta Fondos],  --La que cancela la factura de ventas.
+    CASE
+        WHEN GVA12.COND_VTA <> 1 THEN '1300' -- Si la Condición de Venta no es 1, usar '1300'
+        ELSE CAST(SBA05.COD_CTA AS INT)
+											END AS [Cuenta Fondos], -- Ajustado a INT (Entero) // La que cancela la factura de Ventas
+    CASE
+        WHEN GVA12.COND_VTA <> 1 THEN
+            (
+                SELECT TOP 1 DESCRIPCIO
+                FROM SBA01
+                WHERE COD_CTA = '1300' -- Si la Condición de Venta no es 1, buscar la descripción de '1300'
+            )
+        ELSE SBA01.DESCRIPCIO
+										 END AS [Nombre de Cuenta Fondos],  --La que cancela la factura de ventas.
     SBA22.COD_TARJET AS [Codigo de Tarjeta],  
     CAST(SBA20.ID_PLAN_TARJETA AS INT) AS [Cód. Promoción], -- Ajustado a INT (Entero)
     PT.DESC_PLAN_TARJETA AS [Desc. Promoción],  
@@ -50,16 +61,16 @@ INNER JOIN STA11 ON STA11.COD_ARTICU = GVA53.COD_ARTICU
 LEFT JOIN ARTICULO_CUENTA AC ON STA11.COD_ARTICU = AC.COD_STA11 COLLATE Latin1_General_BIN 
 							-- AND GVA53.COD_ARTICU = AC.COD_STA11 COLLATE Latin1_General_BIN
 --Acá sigue Tesoreria
-INNER JOIN SBA01 ON SBA01.COD_CTA = SBA05.COD_CTA  --Codigo de Cuenta de Tesorería = Movimiento de tesoreria.
-INNER JOIN SBA22 ON SBA22.ID_SBA22 = SBA01.ID_SBA22  --Tarjeta = CuentaDeTesoreria.Tarjeta
-INNER JOIN SBA20 ON SBA20.COD_CTA = SBA01.COD_CTA AND SBA20.T_COMP_REC = GVA12.T_COMP AND SBA20.N_COMP_REC = GVA12.N_COMP --Cupones = Cuenta Tarjeta y Comprobante FAC.
-INNER JOIN PLAN_TARJETA PT ON PT.ID_PLAN_TARJETA = SBA20.ID_PLAN_TARJETA  
+LEFT JOIN SBA01 ON SBA01.COD_CTA = SBA05.COD_CTA  --Codigo de Cuenta de Tesorería = Movimiento de tesoreria.
+LEFT JOIN SBA22 ON SBA22.ID_SBA22 = SBA01.ID_SBA22  --Tarjeta = CuentaDeTesoreria.Tarjeta
+LEFT JOIN SBA20 ON SBA20.COD_CTA = SBA01.COD_CTA AND SBA20.T_COMP_REC = GVA12.T_COMP AND SBA20.N_COMP_REC = GVA12.N_COMP --Cupones = Cuenta Tarjeta y Comprobante FAC.
+LEFT JOIN PLAN_TARJETA PT ON PT.ID_PLAN_TARJETA = SBA20.ID_PLAN_TARJETA  
 --Arranca la parte contable
 INNER JOIN ASIENTO_COMPROBANTE_GV ON ASIENTO_COMPROBANTE_GV.NCOMP_IN_V = GVA12.NCOMP_IN_V 
 INNER JOIN ASIENTO_GV ON ASIENTO_COMPROBANTE_GV.ID_ASIENTO_COMPROBANTE_GV = ASIENTO_GV.ID_ASIENTO_COMPROBANTE_GV  
 LEFT JOIN CUENTA ON CUENTA.ID_CUENTA = ASIENTO_GV.ID_CUENTA --AND AC.ID_CUENTA_VENTAS = CUENTA.ID_CUENTA
 LEFT JOIN ASIENTO_MODELO_GV ON GVA12.ID_ASIENTO_MODELO_GV = ASIENTO_MODELO_GV.ID_ASIENTO_MODELO_GV 
-where GVA12.FECHA_EMIS >= '2023-08-01' and Gva12.T_COMP <> 'REC' 
+WHERE GVA12.FECHA_EMIS >= '2023-08-01' and Gva12.T_COMP <> 'REC' 
 GROUP BY  
     GVA12.FECHA_EMIS,  
     --dbo.TLMostrarComprobantecliente(gva12.t_comp, gva12.n_comp, gva12.cod_client,   
@@ -92,10 +103,8 @@ GROUP BY
 	AC.ID_CUENTA_VENTAS
 
 --/*Se ejecuta la vista correspondiente en el asistente de Consultas Externas*/
-	Set dateformat YMD
-	Select * from FavaComprobantesCompleta
-	Order by [Fecha de Emisión] asc
+	--Set dateformat YMD
+	--Select * from FavaComprobantesCompleta
+	--Order by [Fecha de Emisión] asc
 	
-
-
 	
