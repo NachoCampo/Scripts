@@ -1,5 +1,5 @@
 /*Se crea la vista con todos los campos solicitados en el correo.. La vista se llamara: "FavaComprobantes"*/
---ALTER VIEW FavaComprobantesCompleta AS   
+CREATE VIEW FavaComprobantesCompleta AS   
 SELECT DISTINCT
     GVA12.FECHA_EMIS AS [Fecha de Emisión],  
     --dbo.TLMostrarComprobantecliente(gva12.t_comp, gva12.N_COMP, gva12.cod_client,   
@@ -59,7 +59,7 @@ INNER JOIN ASIENTO_COMPROBANTE_GV ON ASIENTO_COMPROBANTE_GV.NCOMP_IN_V = GVA12.N
 INNER JOIN ASIENTO_GV ON ASIENTO_COMPROBANTE_GV.ID_ASIENTO_COMPROBANTE_GV = ASIENTO_GV.ID_ASIENTO_COMPROBANTE_GV  
 LEFT JOIN CUENTA ON CUENTA.ID_CUENTA = ASIENTO_GV.ID_CUENTA --AND AC.ID_CUENTA_VENTAS = CUENTA.ID_CUENTA
 LEFT JOIN ASIENTO_MODELO_GV ON GVA12.ID_ASIENTO_MODELO_GV = ASIENTO_MODELO_GV.ID_ASIENTO_MODELO_GV 
-where GVA12.FECHA_EMIS >= '2023-08-01' and Gva12.T_COMP <> 'REC' and gva12.N_COMP = 'A0010200000531'
+where GVA12.FECHA_EMIS >= '2023-08-01' and Gva12.T_COMP <> 'REC' 
 GROUP BY  
     GVA12.FECHA_EMIS,  
     --dbo.TLMostrarComprobantecliente(gva12.t_comp, gva12.n_comp, gva12.cod_client,   
@@ -92,10 +92,9 @@ GROUP BY
 	AC.ID_CUENTA_VENTAS
 
 --/*Se ejecuta la vista correspondiente en el asistente de Consultas Externas*/
---	Set dateformat YMD
---	Select * from FavaComprobantesCompleta
---	where [Numero de comprobante] = 'A0009000001491'
---	Order by [Fecha de Emisión] asc
+	Set dateformat YMD
+	Select * from FavaComprobantesCompleta
+	Order by [Fecha de Emisión] asc
 	
 
 
