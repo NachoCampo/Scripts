@@ -1,5 +1,5 @@
 /*Se crea la vista con todos los campos solicitados en el correo.. La vista se llamara: "FavaComprobantes"*/
-CREATE VIEW FavaComprobantesCompleta AS   
+--CREATE VIEW FavaComprobantesCompleta AS   
 SELECT DISTINCT
     GVA12.FECHA_EMIS AS [Fecha de Emisión],  
     --dbo.TLMostrarComprobantecliente(gva12.t_comp, gva12.N_COMP, gva12.cod_client,   
@@ -70,7 +70,7 @@ INNER JOIN ASIENTO_COMPROBANTE_GV ON ASIENTO_COMPROBANTE_GV.NCOMP_IN_V = GVA12.N
 INNER JOIN ASIENTO_GV ON ASIENTO_COMPROBANTE_GV.ID_ASIENTO_COMPROBANTE_GV = ASIENTO_GV.ID_ASIENTO_COMPROBANTE_GV  
 LEFT JOIN CUENTA ON CUENTA.ID_CUENTA = ASIENTO_GV.ID_CUENTA --AND AC.ID_CUENTA_VENTAS = CUENTA.ID_CUENTA
 LEFT JOIN ASIENTO_MODELO_GV ON GVA12.ID_ASIENTO_MODELO_GV = ASIENTO_MODELO_GV.ID_ASIENTO_MODELO_GV 
-WHERE GVA12.FECHA_EMIS >= '2023-08-01' and Gva12.T_COMP <> 'REC' 
+WHERE GVA12.FECHA_EMIS >= '2023-08-01' and Gva12.T_COMP <> 'REC' --and SBA01.COD_CTA = '1042'
 GROUP BY  
     GVA12.FECHA_EMIS,  
     --dbo.TLMostrarComprobantecliente(gva12.t_comp, gva12.n_comp, gva12.cod_client,   
@@ -108,3 +108,5 @@ GROUP BY
 	--Order by [Fecha de Emisión] asc
 	
 	
+
+
