@@ -3,7 +3,7 @@ WITH SaldoInicial AS (
     SELECT 
         COD_CLIENT,
         NRO_SUCURS,
-        SUM(
+		SUM(
             CASE 
                 -- Si es una 'FAC' especial, suma el importe, si no, suma 0
                 WHEN T_COMP = 'FAC' AND N_COMP LIKE '999999999999%' THEN ISNULL(IMPORTE, 0)
@@ -32,7 +32,18 @@ SELECT
             WHEN CTA02.T_COMP IN ('N/C', 'REC') THEN ISNULL(-1 * IMPORTE, 0)
             ELSE 0
         END
-    ) + 
+    ) - 
+    -- Resta el monto del REC imputado a una FAC si existe imputación
+    ISNULL(
+        (SELECT SUM(ISNULL(IMPORTE, 0)) 
+         FROM CTA02 AS Imputaciones 
+         WHERE Imputaciones.T_COMP_IMPUTADO = 'FAC' 
+         AND Imputaciones.N_COMP_IMPUTADO = CTA02.N_COMP COLLATE Modern_Spanish_CI_AI
+         AND Imputaciones.COD_CLIENT = CTA02.COD_CLIENT 
+         AND Imputaciones.NRO_SUCURS = CTA02.NRO_SUCURS 
+         AND Imputaciones.T_COMP = 'REC'
+         ), 0
+    ) +
     -- Suma el saldo inicial acumulado para este cliente y sucursal si existe en el CTE SaldoInicial
     SUM(
         CASE 
