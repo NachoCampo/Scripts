@@ -1,7 +1,8 @@
--- Cambiar CondiciÃ³n de Venta y Talonario para que pasen a Central
+
+-- Cambiar Condición de Venta y Talonario para que pasen a Central
 --Update GVA12 set COND_VTA = '1', TALONARIO = '10'  where N_COMP like '9999999999%'
 
--- CTE para calcular el saldo inicial para los clientes que tienen comprobantes especiales 'FAC' con nÃºmeros que comienzan por '999999999999%'
+-- CTE para calcular el saldo inicial para los clientes que tienen comprobantes especiales 'FAC' con números que comienzan por '999999999999%'
 WITH SaldoInicial AS (
     SELECT 
         COD_CLIENT,
@@ -24,10 +25,11 @@ SELECT
     CTA02.T_COMP AS [Tipo de Comprobante],
     CTA02.N_COMP AS [Nro. Comprobante],
     CTA02.FECHA_EMIS AS [Fecha],
-    CTA02.COD_CLIENT AS [CÃ³d. cliente],
+    CTA02.COD_CLIENT AS [Cód. cliente],
+	CTA02.NOMBRE_CLI AS [Razón Social],
     CTA02.ESTADO AS [Estado],
     CTA02.NRO_SUCURS AS [Nro. de Sucursal],
-    -- CÃ¡lculo del saldo corriente
+    -- Cálculo del saldo corriente
     SUM(
         CASE 
             -- Si es una 'FAC', suma el importe, si es 'N/C' o 'REC', resta el importe. En otros casos, suma 0.
@@ -36,7 +38,7 @@ SELECT
             ELSE 0
         END
     ) - 
-    -- Resta el monto del REC imputado a una FAC si existe imputaciÃ³n
+    -- Resta el monto del REC imputado a una FAC si existe imputación
     ISNULL(
         (SELECT SUM(ISNULL(IMPORTE, 0)) 
          FROM CTA02 AS Imputaciones 
@@ -64,8 +66,8 @@ WHERE
     CTA02.COD_CLIENT <> '000000' AND CTA02.ESTADO <> 'ANU' 
 -- Agrupa los resultados por ciertos campos para evitar duplicados
 GROUP BY 
-    CTA02.T_COMP, CTA02.N_COMP, CTA02.FECHA_EMIS, CTA02.COD_CLIENT, CTA02.ESTADO, CTA02.NRO_SUCURS, SaldoInicial.SaldoInicial
--- Ordena los resultados segÃºn ciertos campos
+    CTA02.T_COMP, CTA02.N_COMP, CTA02.FECHA_EMIS, CTA02.COD_CLIENT, CTA02.NOMBRE_CLI ,CTA02.ESTADO, CTA02.NRO_SUCURS, SaldoInicial.SaldoInicial
+-- Ordena los resultados según ciertos campos
 ORDER BY 
     CTA02.COD_CLIENT,
     CTA02.NRO_SUCURS,
