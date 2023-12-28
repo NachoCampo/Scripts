@@ -14,7 +14,13 @@ WHERE
 
 
 Create View DetalleVentaEntradasWeb AS (
-Select A.Code AS [Codigo] , A.Description AS [Descripción], Q.ReservaId AS [Número de Reserva], CONVERT(DATETIME, CONVERT(VARCHAR, q.CreatedOn, 23)) AS [Fecha de Compra], CONVERT(DATETIME, CONVERT(VARCHAR, Entry, 23)) AS [Fecha de Ingreso]from Qrs Q
+Select 
+CAST(1 AS INT) AS [Contador],   
+A.Code AS [Codigo] , 
+A.Description AS [Descripción], 
+CAST(Q.ReservaId AS INT) AS [Número de Reserva], 
+CONVERT(DATETIME, CONVERT(VARCHAR, q.CreatedOn, 23)) AS [Fecha de Compra], 
+CONVERT(DATETIME, CONVERT(VARCHAR, Entry, 23)) AS [Fecha de Ingreso]from Qrs Q
 	Join Articulos A on
 		A.Id = Q.ArticuloId
 where Q.CreatedBy = 'WEB'
