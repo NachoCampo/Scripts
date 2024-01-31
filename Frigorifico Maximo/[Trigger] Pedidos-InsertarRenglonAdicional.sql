@@ -1,4 +1,4 @@
-CREATE TRIGGER tr_InsertarRenglonAdicional
+CREATE TRIGGER tr_InsertarReng lonAdicional
 ON [MAXIVALENTI_SRL]..GVA21
 AFTER INSERT
 AS
@@ -72,7 +72,7 @@ ORDER BY ID_GVA21 DESC;
         0.0000000 AS PEN_REM_FC,
         0.0000000 AS PEN_FAC_RE,
         0.0100000 AS PRECIO,
-        8 AS TALON_PED,
+        8 AS TALON_PED, --Revisar el Talonario de Pedidos por cada base.
         '' AS COD_CLASIF,
         0.0000000 AS CANT_A_DES_2,
         0.0000000 AS CANT_A_FAC_2,
@@ -83,7 +83,7 @@ ORDER BY ID_GVA21 DESC;
         0.0000000 AS PEN_FAC_RE_2,
         3 AS ID_MEDIDA_VENTAS,
         NULL AS ID_MEDIDA_STOCK_2,
-        3 AS ID_MEDIDA_STOCK,
+        3 AS ID_MEDIDA_STOCK, --Colocar el ID_MEDIDA_STOCK de "Sinunidad"
         'V' AS UNIDAD_MEDIDA_SELECCIONADA,
         '' AS COD_ARTICU_KIT,
         0 AS RENGL_PADR,
