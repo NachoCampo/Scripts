@@ -21,7 +21,6 @@ BEGIN
               AND GVA53.COD_ARTICU = GVA03.COD_ARTICU
         );
 
-
     -- Verifica que si el COD_ARTICU de la GVA03 ya fue facturado, le pone las cantidades en 0.000000 para que el facturador al tratar de volver a seleccionar el pedido no traiga esos renglones.. Esto no incluye al "A000001".
     UPDATE GVA03
     SET
