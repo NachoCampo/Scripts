@@ -32,7 +32,7 @@ Este repositorio contiene un trigger y tres stored procedures (SP) desarrollados
 ### SP 2:
 
 #### Nombre:
-- Nombre del SP: `ActualizarEstadoPedido.sql`
+- Nombre del SP: `ActualizarEstadoPedido`
 
 #### Descripción:
 - Este SP realiza el cambio de estados del pedido. A las 10 PM, todos los pedidos que al menos tengan un solo registro facturado (relación con la GVA55) cambia al estado "Cerrado". Si el pedido no se facturo ni un renglón, ese mismo no interviene en este SP. El estado del Pedido **Cerrado** es el "4" en Tango.
