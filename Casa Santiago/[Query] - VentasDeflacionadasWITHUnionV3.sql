@@ -48,16 +48,36 @@ GROUP BY
 
 /*Unifica las dos empresas con sus totales*/
 SELECT 
-    DATEFROMPARTS(YEAR([Fecha de emisión]), MONTH([Fecha de emisión]), 1) AS Mes,
-    [Cod. Articulo],
-    [Descripcion],
-    SUM(Cantidad) AS TotalCantidad
+    DATEFROMPARTS(YEAR([Fecha de emisión]), MONTH([Fecha de emisión]), 1) AS [Fecha],
+    [Cod. Articulo] AS [Codigo de Articulo],
+    [Descripcion] AS [Descripcion Articulo],
+    SUM(CASE WHEN [Desc. Sucursal] = 'Pruebas' THEN Cantidad ELSE 0 END) AS [Pruebas],
+    SUM(CASE WHEN [Desc. Sucursal] = 'Casa Santiago' THEN Cantidad ELSE 0 END) AS [Casa Santiago],
+    SUM(Cantidad) AS [Cantidad Total],
+	SUM (Total) AS [Total Facturado]
 FROM (
-    SELECT [Fecha de emisión], [Cod. Articulo], [Descripcion], Cantidad FROM VentasDeflacionadasPruebas
+    SELECT 
+        [Fecha de emisión], 
+        [Cod. Articulo], 
+        [Descripcion], 
+        Cantidad,
+		[Total],
+        'Pruebas' AS [Desc. Sucursal] -- Agrega el nombre de la sucursal
+    FROM 
+        VentasDeflacionadasPruebas
     UNION ALL
-    SELECT [Fecha de emisión], [Cod. Articulo], [Descripcion], Cantidad FROM CASA_SANTIAGO_VACANZA..VentasDeflacionadasCasaSantiago
+    SELECT 
+        [Fecha de emisión], 
+        [Cod. Articulo], 
+        [Descripcion], 
+        Cantidad,
+		[Total],
+        'Casa Santiago' AS [Desc. Sucursal] -- Agrega el nombre de la sucursal
+    FROM 
+        CASA_SANTIAGO_VACANZA..VentasDeflacionadasCasaSantiago
 ) AS CombinedResults
 GROUP BY 
     DATEFROMPARTS(YEAR([Fecha de emisión]), MONTH([Fecha de emisión]), 1),
     [Cod. Articulo],
     [Descripcion];
+
