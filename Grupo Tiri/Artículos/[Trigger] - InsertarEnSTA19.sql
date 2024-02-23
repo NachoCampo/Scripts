@@ -3,7 +3,7 @@ ON STA11
 AFTER INSERT
 AS
 BEGIN
-    -- Verificar si el artículo no existe en STA19 y tiene STOCK igual a '1'
+    -- Verificar si el artículo no existe en STA19 y tiene STOCK igual a '1' (Llave Stock en Tango)
     INSERT INTO STA19 (
         FILLER,
         CANT_COMP,

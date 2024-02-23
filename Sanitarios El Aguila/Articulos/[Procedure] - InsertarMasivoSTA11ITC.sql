@@ -8,7 +8,7 @@ CA_CLAS_TIPO --TIPO
 */
 
 /*Se arma un Procedure en la base de datos para hacer el "insert" de cada uno de los clasificadores*/
--- Crear un procedimiento almacenado
+-- Crear un procedimiento almacenado llamado InsertarMasivoSTA11ITC
 CREATE PROCEDURE InsertarMasivoSTA11ITC
 AS
 BEGIN
