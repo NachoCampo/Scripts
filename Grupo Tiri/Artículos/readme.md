@@ -11,8 +11,8 @@ Este repositorio contiene un Trigger llamado: *InsertarEnSTA19* que ante cada al
 #### Descripción:
 - Este trigger agrega un registro en la STA19 con el Saldo del Artículo apenas se crea en Tango. 
 - Tiene distintas condiciones:
-+ Verificar si el artículo no existe en STA19 y tiene STOCK igual a '1' (Lleva Stock).
-+  Se tiene que revisar en que deposito se va a agregar el registro.
+    + Verificar si el artículo no existe en STA19 y tiene STOCK igual a '1' (Lleva Stock).
+    +  Se tiene que revisar en que deposito se va a agregar el registro.
 
 #### Uso:
 - Es un trigger que se ejecuta directamente apenas se termina de grabar el artículo en la base de datos.
