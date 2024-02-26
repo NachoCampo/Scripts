@@ -1,4 +1,4 @@
---La consulta muestra el Circuito de Cobranzas donde tenemos "Nro. Pedido", "Nro. Factura", "Nro. Recibo", "Total Factura" y "Total Cobrado".
+--La vista muestra el Circuito de Cobranzas donde tenemos "Nro. Pedido", "Nro. Factura", "Nro. Recibo", "Total Factura" y "Total Cobrado".
 CREATE VIEW CircuitoCobranzas AS (
 SELECT
 	GVA14.COD_CLIENT AS [Cod. Cliente], --Codigo de Cliente
@@ -42,3 +42,13 @@ GROUP BY
     GVA21.USUARIO_INGRESO,
     GVA21.TERMINAL_INGRESO
 )
+
+
+
+
+--Consulta Externa agregada a Tango.
+SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
+SET DATEFORMAT DMY 
+SET DATEFIRST 7 
+SET DEADLOCK_PRIORITY -8;
+Select * from CircuitoCobranzas
