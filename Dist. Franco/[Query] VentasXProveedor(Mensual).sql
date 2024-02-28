@@ -4,11 +4,43 @@ SET DATEFIRST 7
 SET DEADLOCK_PRIORITY -8;
 Select * from VentasXProveedorMensual
 
---Se crea la query para que traiga sumarizadas las ventas por proveedor y poder revisar que proveedor es quien más se vende.
-Create View VentasXProveedorMensual AS (
+Create View VentasXProveedorMensual AS 
+WITH ClasificacionRecursiva AS ( --Esa subconsulta lo que hace es traer las carpetas padre de cada subcarpeta.
+    SELECT 
+        IDFOLDER,
+        IDPARENT,
+        1 AS Nivel
+    FROM 
+        DISTRIBUIDORA_FRANCO..STA11FLD
+    WHERE 
+        IDFOLDER IN (
+            SELECT TOP 1 IDFOLDER
+            FROM DISTRIBUIDORA_FRANCO..STA11ITC A
+            --WHERE A.CODEA = CTA_ARTICULO.COD_ARTICULO
+        )
+    UNION ALL
+    SELECT 
+        F.IDFOLDER,
+        F.IDPARENT,
+        CR.Nivel + 1
+    FROM 
+        DISTRIBUIDORA_FRANCO..STA11FLD F
+    INNER JOIN ClasificacionRecursiva CR ON F.IDPARENT = CR.IDFOLDER
+)
 SELECT 
 	SUM( CASE WHEN CTA02.TCOMP_IN_V = 'CC' then (-1) ELSE (1) END *  CASE 'BIMONCTE' WHEN 'BIMONCTE' THEN   (CASE CTA02.MON_CTE WHEN 1 THEN CASE 'NO' WHEN 'NO'                                   THEN (CTA03.PRECIO_NET * CTA03.CANTIDAD)                                    ELSE CASE CTA02.IMPORTE WHEN 0 THEN (CTA03.PRECIO_NET * CTA03.CANTIDAD)                                        ELSE ((CTA03.PRECIO_NET * CTA03.CANTIDAD) - ((CTA03.PRECIO_NET * CTA03.CANTIDAD) * CTA02.PORC_BONIF/100) +                                        ((CTA03.PRECIO_NET * CTA03.CANTIDAD) * (CTA02.IMPORTE_FL/(CTA02.IMPORTE-CTA02.IMPORTE_FL+CTA02.IMPORTE_BO-CTA02.IMPORTE_IV-CTA02.IMPORTE_IN-ISNULL(IMPUESTOS.IMPORTE,0)))) + ((CTA03.PRECIO_NET * CTA03.CANTIDAD)                                        * CTA02.PORC_RECARGO/100))  END END                                  ELSE CASE 'NO' WHEN 'NO'                                   THEN (CTA03.PRECIO_NET * CTA03.CANTIDAD) * CTA02.COTIZ                                     ELSE CASE CTA02.IMPORTE WHEN 0 THEN (CTA03.PRECIO_NET * CTA03.CANTIDAD) * CTA02.COTIZ                                        ELSE ((CTA03.PRECIO_NET * CTA03.CANTIDAD) - ((CTA03.PRECIO_NET * CTA03.CANTIDAD) * CTA02.PORC_BONIF/100) +                                        ((CTA03.PRECIO_NET * CTA03.CANTIDAD) * (CTA02.IMPORTE_FL/(CTA02.IMPORTE-CTA02.IMPORTE_FL+CTA02.IMPORTE_BO-CTA02.IMPORTE_IV-CTA02.IMPORTE_IN-ISNULL(IMPUESTOS.IMPORTE,0)))) + ((CTA03.PRECIO_NET * CTA03.CANTIDAD)                                        * CTA02.PORC_RECARGO/100))  * CTA02.COTIZ END END                             END)  WHEN 'BIORIGEN' THEN   (CASE CTA02.MON_CTE WHEN 1 THEN CASE CTA02.COTIZ WHEN 0                                   THEN 0                                   ELSE CASE 'NO' WHEN 'NO'                                        THEN (CTA03.PRECIO_NET * CTA03.CANTIDAD)   / CTA02.COTIZ                                         ELSE CASE CTA02.IMPORTE WHEN 0 THEN (CTA03.PRECIO_NET * CTA03.CANTIDAD)/ CTA02.COTIZ                                              ELSE ((CTA03.PRECIO_NET * CTA03.CANTIDAD) - ((CTA03.PRECIO_NET * CTA03.CANTIDAD) * CTA02.PORC_BONIF/100) +                                                           ((CTA03.PRECIO_NET * CTA03.CANTIDAD) * (CTA02.IMPORTE_FL/(CTA02.IMPORTE-CTA02.IMPORTE_FL+CTA02.IMPORTE_BO-CTA02.IMPORTE_IV-CTA02.IMPORTE_IN-ISNULL(IMPUESTOS.IMPORTE,0))))                                                           + ((CTA03.PRECIO_NET * CTA03.CANTIDAD) * CTA02.PORC_RECARGO/100))  / CTA02.COTIZ END END                                        END                                   ELSE CASE 'NO' WHEN 'NO'                                   THEN (CTA03.PRECIO_NET * CTA03.CANTIDAD)                                    ELSE CASE CTA02.IMPORTE WHEN 0 THEN (CTA03.PRECIO_NET * CTA03.CANTIDAD)                                        ELSE ((CTA03.PRECIO_NET * CTA03.CANTIDAD) - ((CTA03.PRECIO_NET * CTA03.CANTIDAD) * CTA02.PORC_BONIF/100) +                                                           ((CTA03.PRECIO_NET * CTA03.CANTIDAD) * (CTA02.IMPORTE_FL/(CTA02.IMPORTE-CTA02.IMPORTE_FL+CTA02.IMPORTE_BO-CTA02.IMPORTE_IV-CTA02.IMPORTE_IN-ISNULL(IMPUESTOS.IMPORTE,0)))) +                                                           ((CTA03.PRECIO_NET * CTA03.CANTIDAD) * CTA02.PORC_RECARGO/100))  END END                              END)  WHEN 'BICOTIZ'  THEN CASE 1  WHEN 0 THEN 0  ELSE   (CASE CTA02.MON_CTE WHEN 1 THEN CASE 'NO' WHEN 'NO'                                THEN (CTA03.PRECIO_NET * CTA03.CANTIDAD)  / 1                                ELSE CASE CTA02.IMPORTE WHEN 0 THEN (CTA03.PRECIO_NET * CTA03.CANTIDAD)  / 1                                      ELSE ((CTA03.PRECIO_NET * CTA03.CANTIDAD) - ((CTA03.PRECIO_NET * CTA03.CANTIDAD) * CTA02.PORC_BONIF/100) +                                     ((CTA03.PRECIO_NET * CTA03.CANTIDAD) * (CTA02.IMPORTE_FL/(CTA02.IMPORTE-CTA02.IMPORTE_FL+CTA02.IMPORTE_BO-CTA02.IMPORTE_IV-CTA02.IMPORTE_IN-ISNULL(IMPUESTOS.IMPORTE,0)))) +                                     ((CTA03.PRECIO_NET * CTA03.CANTIDAD) * CTA02.PORC_RECARGO/100))                                                           / 1 END END                             ELSE CASE 'NO' WHEN 'NO'                              THEN (CTA03.PRECIO_NET * CTA03.CANTIDAD) * CTA02.COTIZ  / 1                                ELSE CASE CTA02.IMPORTE WHEN 0 THEN  (CTA03.PRECIO_NET * CTA03.CANTIDAD) * CTA02.COTIZ  / 1                                     ELSE ((CTA03.PRECIO_NET * CTA03.CANTIDAD) - ((CTA03.PRECIO_NET * CTA03.CANTIDAD) * CTA02.PORC_BONIF/100) +                                             ((CTA03.PRECIO_NET * CTA03.CANTIDAD) * (CTA02.IMPORTE_FL/(CTA02.IMPORTE-CTA02.IMPORTE_FL+CTA02.IMPORTE_BO-CTA02.IMPORTE_IV-CTA02.IMPORTE_IN-ISNULL(IMPUESTOS.IMPORTE,0)))) +                                              ((CTA03.PRECIO_NET * CTA03.CANTIDAD) * CTA02.PORC_RECARGO/100)) * CTA02.COTIZ  / 1   END END                              END)  END END      )  AS [Importe] ,
-	CASE WHEN PROVEEDOR_HABITUAL_ART.COD_PROVEE IS NULL THEN    CPA01.NOM_PROVEE ELSE CPA01_PROV_HABITUAL.NOM_PROVEE END AS [Nombre proveedor] 
+	CASE WHEN PROVEEDOR_HABITUAL_ART.COD_PROVEE IS NULL THEN    CPA01.NOM_PROVEE ELSE CPA01_PROV_HABITUAL.NOM_PROVEE END AS [Nombre proveedor],
+	SUM(CASE CTA03.TCOMP_IN_V  WHEN 'CC'  THEN(-1)  ELSE(1)  END  * CTA03.CANTIDAD / CASE WHEN CAN_EQUI_V = 0 THEN 1 ELSE CAN_EQUI_V END) AS [Cantidad venta] ,
+		(
+		SELECT 
+			CASE 
+				WHEN MAX(CR.IDPARENT) = 2 THEN 'Ferreteria' 
+				WHEN MAX(CR.IDPARENT) = 3 THEN 'Alimentos' 
+				ELSE 'Otra clasificación' 
+			END
+		FROM 
+			ClasificacionRecursiva CR
+	) AS [Clasificación]	
 FROM 
 CTA03 (NOLOCK)  
 INNER JOIN CTA02 (NOLOCK) ON 
@@ -42,5 +74,3 @@ CTA03.Cod_Articu NOT IN ('Art. Ajuste') AND (CTA03.Cod_Articu <> '') AND CTA02.T
 
 GROUP BY 
 	CASE WHEN PROVEEDOR_HABITUAL_ART.COD_PROVEE IS NULL THEN    CPA01.NOM_PROVEE ELSE CPA01_PROV_HABITUAL.NOM_PROVEE END , CASE WHEN PROVEEDOR_HABITUAL_ART.COD_PROVEE IS NULL THEN    ISNULL(PROVEEDOR_ART.COD_PROVEE, '' ) ELSE PROVEEDOR_HABITUAL_ART.COD_PROVEE END
-	)
-
