@@ -1,6 +1,3 @@
-/*Consulta agregada al Administrador de Tango*/
-Select * from AlquileresXPuesto
-
 --Creación de la View y trae los alquileres del día que se consulta. A la 00.01 hs esta consulta se ve vacía debido a que todos los artículos, mediante el SP_HABILITA_ESCALA se vuelven a habilitar.
 Create View AlquileresXPuesto AS (
 SELECT
