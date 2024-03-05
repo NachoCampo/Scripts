@@ -8,6 +8,7 @@ Este repositorio contiene un trigger.
 
 ### Descripción:
 - Este trigger se dispara cuando se graba una modificación de un precio sobre la Lista 35 y le pega a la 135.
+- Solo se ejecuta en la base de datos [Maxivalenti_Srl]
 
 ### Funcionalidad:
 - Este trigger esta creado sobre la tabla GVA17.
