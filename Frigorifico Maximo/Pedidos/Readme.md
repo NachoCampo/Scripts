@@ -48,10 +48,10 @@ Este repositorio contiene un trigger y tres stored procedures (SP) desarrollados
 #### Descripción:
 - Este SP realiza el cambio de estado de los pedidos que estén "Pendientes" (Aprobados) sin ningún renglón facturado (no hay relación con la GVA55) y lleven más de dos días desde que se genero el pedido.
 - En este caso el pedido pasa a estado "Cerrado".
-- Se ejecuta todos los días a las 11 PM.
+- Se ejecuta todos los días a las 1 AM.
 
 #### Uso:
-- Se ejecuta todas las noches a las 11PM en todas las bases de datos y en la consulta de "Circuito de Pedidos" que le armamos, van a ver los pedidos cerrados.
+- Se ejecuta todas las noches a las 1 AM en todas las bases de datos y en la consulta de "Circuito de Pedidos" que le armamos, van a ver los pedidos cerrados.
 
 ## Contribución:
 
