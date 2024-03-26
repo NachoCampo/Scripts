@@ -1,14 +1,38 @@
 /*Se crea una consulta a medida de "Movimientos Consolidados" el cual muestra agrupado por artículo las cantidades, según entrada o salida*/
-CREATE VIEW MOVIMIENTOSCONSOLIDADOS AS (
+ALTER VIEW MOVIMIENTOSCONSOLIDADOS AS (
 SELECT 
 	CTA11.FECHA_MOV AS [Fecha movimiento] ,
-	CTA11.TIPO_MOV AS [Tipo de Movimiento] ,
+	CASE 
+		WHEN CTA11.TIPO_MOV = 'E' THEN 'Ingreso'
+		WHEN CTA11.TIPO_MOV = 'S' THEN 'Egreso'
+		ELSE 'Tipo no especificado'
+	END AS [Tipo de Movimiento],
 	CTA09.N_COMP AS [Nro. comprobante] ,
     CTA11.COD_ARTICU AS [Cód. Artículo], 
 	CTA_ARTICULO.DESC_CTA_ARTICULO AS [Artículo] ,
 	SUCURSAL.DESC_SUCURSAL AS [Sucursal] ,
 	SUM(CASE CTA11.TIPO_MOV WHEN 'E' THEN CTA11.CANTIDAD ELSE - CTA11.CANTIDAD END) AS [Cantidad] ,
-	CASE CTA11.TCOMP_IN_S WHEN 'FC' THEN 'Factura' WHEN 'FR' THEN 'Factura remito' WHEN 'CC' THEN 'Nota de crédito' WHEN 'DC' THEN 'Nota de débito' WHEN 'RC' THEN 'Recibo' WHEN 'RE' THEN 'Remito' WHEN 'DR' THEN 'Devolución de remito' WHEN 'FP' THEN 'Factura' WHEN 'FS' THEN 'Factura remito' WHEN 'CP' THEN 'Nota de crédito' WHEN 'DP' THEN 'Nota de débito' WHEN 'OP' THEN 'Orden de pago' WHEN 'RP' THEN 'Remito' WHEN 'DS' THEN 'Devolución de remito' WHEN 'AJ' THEN 'Ajuste' WHEN 'AR' THEN 'Armado' WHEN 'TI' THEN 'Transferencia' WHEN 'VS' THEN 'Egreso' WHEN 'VE' THEN 'Ingreso' WHEN 'ME' THEN 'Descarga batch' WHEN 'CR' THEN 'Comanda' END AS [Tipo]
+	CASE CTA11.TCOMP_IN_S WHEN 'FC' THEN '[Ventas] Factura' 
+						WHEN 'FR' THEN '[Ventas] Factura remito' 
+						WHEN 'CC' THEN '[Ventas] Nota de crédito' 
+						WHEN 'DC' THEN '[Ventas] Nota de débito' 
+						WHEN 'RC' THEN '[Ventas] Recibo' 
+						WHEN 'RE' THEN '[Ventas] Remito' 
+						WHEN 'DR' THEN '[Ventas] Devolución de remito' 
+						WHEN 'FP' THEN '[Compras] Factura' 
+						WHEN 'FS' THEN '[Compras] Factura remito' 
+						WHEN 'CP' THEN '[Compras] Nota de crédito' 
+						WHEN 'DP' THEN '[Compras] Nota de débito' 
+						WHEN 'OP' THEN '[Compras] Orden de pago' 
+						WHEN 'RP' THEN '[Compras] Remito' 
+						WHEN 'DS' THEN '[Compras] Devolución de remito' 
+						WHEN 'AJ' THEN '[Stock] Ajuste' 
+						WHEN 'AR' THEN '[Stock] Armado' 
+						WHEN 'TI' THEN '[Stock] Transferencia' 
+						WHEN 'VS' THEN '[Stock] Egreso' 
+						WHEN 'VE' THEN '[Stock] Ingreso' 
+						WHEN 'ME' THEN '[Stock]] Descarga batch' 
+						WHEN 'CR' THEN 'Comanda' END AS [Tipo]
 FROM 
 CTA11 
 LEFT JOIN CTA09 ON CTA09.TCOMP_IN_S = CTA11.TCOMP_IN_S AND CTA09.NCOMP_IN_S = CTA11.NCOMP_IN_S AND CTA09.NRO_SUCURS = CTA11.NRO_SUCURS 
@@ -25,5 +49,26 @@ LEFT JOIN SUCURSAL SUC_ORIGEN ON SUC_ORIGEN.NRO_SUCURSAL = CTA09.SUC_ORIG
 WHERE 
  CTA09.ESTADO_MOV <> 'A'
 GROUP BY 
-	CTA11.FECHA_MOV , CTA11.TIPO_MOV , CTA09.N_COMP , CTA_ARTICULO.DESC_CTA_ARTICULO , SUCURSAL.DESC_SUCURSAL ,  CASE CTA11.TCOMP_IN_S WHEN 'FC' THEN 'Factura' WHEN 'FR' THEN 'Factura remito' WHEN 'CC' THEN 'Nota de crédito' WHEN 'DC' THEN 'Nota de débito' WHEN 'RC' THEN 'Recibo' WHEN 'RE' THEN 'Remito' WHEN 'DR' THEN 'Devolución de remito' WHEN 'FP' THEN 'Factura' WHEN 'FS' THEN 'Factura remito' WHEN 'CP' THEN 'Nota de crédito' WHEN 'DP' THEN 'Nota de débito' WHEN 'OP' THEN 'Orden de pago' WHEN 'RP' THEN 'Remito' WHEN 'DS' THEN 'Devolución de remito' WHEN 'AJ' THEN 'Ajuste' WHEN 'AR' THEN 'Armado' WHEN 'TI' THEN 'Transferencia' WHEN 'VS' THEN 'Egreso' WHEN 'VE' THEN 'Ingreso' WHEN 'ME' THEN 'Descarga batch' WHEN 'CR' THEN 'Comanda' END , CTA11.COD_ARTICU , CTA11.COD_CLASIF , CTA11.PRECIO
+	CTA11.FECHA_MOV , CTA11.TIPO_MOV , CTA09.N_COMP , CTA_ARTICULO.DESC_CTA_ARTICULO , SUCURSAL.DESC_SUCURSAL ,  CASE CTA11.TCOMP_IN_S 
+						WHEN 'FC' THEN '[Ventas] Factura' 
+						WHEN 'FR' THEN '[Ventas] Factura remito' 
+						WHEN 'CC' THEN '[Ventas] Nota de crédito' 
+						WHEN 'DC' THEN '[Ventas] Nota de débito' 
+						WHEN 'RC' THEN '[Ventas] Recibo' 
+						WHEN 'RE' THEN '[Ventas] Remito' 
+						WHEN 'DR' THEN '[Ventas] Devolución de remito' 
+						WHEN 'FP' THEN '[Compras] Factura' 
+						WHEN 'FS' THEN '[Compras] Factura remito' 
+						WHEN 'CP' THEN '[Compras] Nota de crédito' 
+						WHEN 'DP' THEN '[Compras] Nota de débito' 
+						WHEN 'OP' THEN '[Compras] Orden de pago' 
+						WHEN 'RP' THEN '[Compras] Remito' 
+						WHEN 'DS' THEN '[Compras] Devolución de remito' 
+						WHEN 'AJ' THEN '[Stock] Ajuste' 
+						WHEN 'AR' THEN '[Stock] Armado' 
+						WHEN 'TI' THEN '[Stock] Transferencia' 
+						WHEN 'VS' THEN '[Stock] Egreso' 
+						WHEN 'VE' THEN '[Stock] Ingreso' 
+						WHEN 'ME' THEN '[Stock]] Descarga batch' 
+						WHEN 'CR' THEN 'Comanda' END , CTA11.COD_ARTICU , CTA11.COD_CLASIF , CTA11.PRECIO
 )
